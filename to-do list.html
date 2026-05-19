@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>To-Do List</title>
+
+    <!-- 
+        CSS is included inside the <style> tag as required.
+        The purpose of this styling is to make the interface clean,
+        readable, and similar to the provided figure.
+    -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        .container {
+            width: 400px;
+            margin: 50px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 6px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            margin-bottom: 15px;
+        }
+
+        .input-area {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 8px;
+        }
+
+        .input-area button {
+            background-color: #28a745;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .task-text.completed {
+            text-decoration: line-through;
+            color: gray;
+        }
+
+        .edit-btn {
+            background-color: #ffc107;
+            border: none;
+            padding: 4px 6px;
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+
+        .remove-btn {
+            background-color: #dc3545;
+            color: white;
+            border: none;
+            padding: 4px 6px;
+            cursor: pointer;
+            margin-left: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>To-Do List</h2>
+
+    <!-- 
+        Input area for entering a new task.
+        Users type the task and click "Add Task".
+    -->
+    <div class="input-area">
+        <input type="text" id="taskInput" placeholder="Enter new task">
+        <button id="addTaskBtn">Add Task</button>
+    </div>
+
+    <!-- 
+        The unordered list where tasks will be dynamically added.
+    -->
+    <ul id="taskList"></ul>
+</div>
+
+<!-- 
+    JavaScript is included inside the <script> tag.
+    Event delegation is used to handle Edit, Remove, and Checkbox actions.
+-->
+<script>
+    const addTaskBtn = document.getElementById("addTaskBtn");
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+
+    /*
+        Adds a new task to the list when the Add Task button is clicked.
+        This function dynamically creates the required elements.
+    */
+    addTaskBtn.addEventListener("click", function () {
+        const taskText = taskInput.value.trim();
+
+        if (taskText === "") {
+            alert("Please enter a task.");
+            return;
+        }
+
+        const li = document.createElement("li");
+
+        li.innerHTML = `
+            <input type="checkbox" class="complete-checkbox">
+            <span class="task-text">${taskText}</span>
+            <br>
+            <button class="edit-btn">Edit</button>
+            <button class="remove-btn">Remove</button>
+        `;
+
+        taskList.appendChild(li);
+        taskInput.value = "";
+    });
+
+    /*
+        Event delegation is used here.
+        Instead of attaching event listeners to every button,
+        we listen on the parent <ul> and detect the clicked element.
+    */
+    taskList.addEventListener("click", function (event) {
+
+        const target = event.target;
+        const li = target.closest("li");
+
+        /*
+            Removes a task when the Remove button is clicked.
+        */
+        if (target.classList.contains("remove-btn")) {
+            li.remove();
+        }
+
+        /*
+            Opens a dialog box to edit the task when Edit is clicked.
+            Uses the browser's prompt dialog as required.
+        */
+        if (target.classList.contains("edit-btn")) {
+            const taskSpan = li.querySelector(".task-text");
+            const newTask = prompt("Edit task:", taskSpan.textContent);
+
+            if (newTask !== null && newTask.trim() !== "") {
+                taskSpan.textContent = newTask;
+            }
+        }
+    });
+
+    /*
+        Handles marking tasks as complete or incomplete.
+        Uses event delegation for checkbox changes.
+    */
+    taskList.addEventListener("change", function (event) {
+        if (event.target.classList.contains("complete-checkbox")) {
+            const taskSpan = event.target.nextElementSibling;
+            taskSpan.classList.toggle("completed");
+        }
+    });
+</script>
+
+</body>
+</html>
